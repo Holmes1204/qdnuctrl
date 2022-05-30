@@ -6,7 +6,7 @@
 #define _COMMON_PARAMETER_
 
 #include "reference/common_include.h"
-
+enum Leg{LF=0,RF=1,LB=2,RB=3};
 /**
   * @param beta -> duty cycle
   * @param phi  -> phase position of Light Hind

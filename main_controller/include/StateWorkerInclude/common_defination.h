@@ -11,8 +11,7 @@
 #include "geometry_msgs/Vector3.h"
 #include "geometry_msgs/Twist.h"
 #include "std_msgs/Float64MultiArray.h"
-#include "wtr_serial/em_ev.h"
-#include "wtr_serial/em_fb_raw.h"
+
 
 namespace quad{
     /*! State Mode */
@@ -41,14 +40,11 @@ namespace quad{
         /*! Control msg */
         std_msgs::Float64MultiArray angle_gazebo_data;
         std_msgs::Float64MultiArray angle_real_data;
-        wtr_serial::em_ev  motor_cmd;
 
         /*! feedback info */
         std_msgs::Float64MultiArray position_feedback_info;
         std_msgs::Float64MultiArray velocity_feedback_info;
         std_msgs::Float64MultiArray current_feedback_info;
-        wtr_serial::em_fb_raw  motor_fdb;
-
     };
 }
 

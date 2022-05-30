@@ -46,16 +46,29 @@ public:
         }
 
     }
+    enum Leg{LF=0,RF=1,LB=2,RB=3};
 
     /*!
-     * Return the leg coordinate in robot frame
+     * Return the foot end coordinate in body frame
      */
     Vec3 ForwardKinematic(int _leg, Vec3 _q){
-        this->cur_p_[_leg].x() = this->init_p_[_leg].x() -this->l1*std::sin(_q(1))
-                -this->l2*std::sin(_q(1)+_q(2));
-        this->cur_p_[_leg].y() = this->init_p_[_leg].y();
-        this->cur_p_[_leg].z() = this->init_p_[_leg].z() - this->l1*std::cos(_q(1))
-                -this->l2*std::cos(_q(1)+_q(2));
+        switch (_leg)
+        {
+        case LF:
+        case LB:
+            this->cur_p_[_leg].x() = this->init_p_[_leg].x() + this->l1*std::sin(_q(1))+ this->l2*std::sin(_q(1)+_q(2));
+            this->cur_p_[_leg].y() = this->init_p_[_leg].y();
+            this->cur_p_[_leg].z() = this->init_p_[_leg].z() - this->l1*std::cos(_q(1))-this->l2*std::cos(_q(1)+_q(2));
+            break;
+        case RF:
+        case RB:
+            this->cur_p_[_leg].x() = this->init_p_[_leg].x() - this->l1*std::sin(_q(1)) - this->l2*std::sin(_q(1)+_q(2));
+            this->cur_p_[_leg].y() = this->init_p_[_leg].y();
+            this->cur_p_[_leg].z() = this->init_p_[_leg].z() - this->l1*std::cos(_q(1))-this->l2*std::cos(_q(1)+_q(2));
+            break;
+        default:
+            break;
+        }
         return this->cur_p_[_leg];
     }
 
@@ -75,11 +88,11 @@ public:
             this->des_q_[_leg].z() = -this->des_q_[_leg].z();
         }
         double s2 = sin(this->des_q_[_leg].z());
-
         /*! Get theta1 */
         double c1 = (-(this->l1+l2*c2)*this->temp_p_[_leg].z() - this->l2*s2*this->temp_p_[_leg].x())
                 / (pow(this->temp_p_[_leg].x(), 2) + pow(this->temp_p_[_leg].z(),2));
         this->des_q_[_leg].y() = acos(c1);
+
 
         /*! Verify the theta1 */
         double x_output, z_output;
@@ -95,10 +108,7 @@ public:
         //std::cout << "theta1 = " << this->des_q_[_leg].y() << " theta2 = " << this->des_q_[_leg].z() << std::endl;
         //std::cout << "x = " << this->temp_p_[_leg].x() << " z = " << this->temp_p_[_leg].z() << std::endl;
         //std::cout << "x_output = " << x_output << " z_output = " << z_output << std::endl;
-
         return this->des_q_[_leg];
-
-
     }
 
 };

@@ -122,7 +122,9 @@ public:
     }
 
     void UpdateData() {
+        //ntbx
         for (int foot = 0; foot < 4; foot++) {
+            
             this->leg_data_[foot].p = this->model_LegKinematic->fk(
                     this->leg_data_[foot].q, rho_opt_list[foot], rho_fix_list[foot]);
             this->leg_data_[foot].J = this->model_LegKinematic->jac(
@@ -132,8 +134,10 @@ public:
 
         }
     }
+
     void UpdateCommand(){
-            for (int foot = 0; foot < 4; foot++) {
+        //ntbx
+        for (int foot = 0; foot < 4; foot++) {
                 this->leg_command_[foot].qDes = this->model_kinematic->InverseKinematic(foot,
                                                                                         this->leg_command_[foot].pDes);
                 Vec2 temp_v;
@@ -146,22 +150,22 @@ public:
             }
         }
 
+
     void ComputeJacobian(Vec3 &q, Mat22 *J, Mat33 *J_3DoF, int leg) {
+
             double l1 = quad::HIP_LENGTH;
             double l2 = quad::KNEE_LENGTH;
-
             double s1 = std::sin(q(1));
             double s2 = std::sin(q(2));
             double c1 = std::cos(q(1));
             double c2 = std::cos(q(2));
-            double s12 = s1 * c2 + c1 * s2;
-            double c12 = c1 * c2 - s1 * s2;
+            double s12 = std::sin(q(1)+q(2));
+            double c12 = std::cos(q(1)+q(2));
 
             J->operator()(0, 0) = -(l1 * c1 + l2 * c12);
             J->operator()(0, 1) = -(l2 * c12);
             J->operator()(1, 0) = l1 * s1 + l2 * s12;
             J->operator()(1, 1) = l2 * s12;
-
             J_3DoF->operator()(0, 0) = 0;
             J_3DoF->operator()(0, 1) = -(l1 * c1 + l2 * c12);
             J_3DoF->operator()(0, 2) = -(l2 * c12);
@@ -171,7 +175,6 @@ public:
             J_3DoF->operator()(2, 0) = 0;
             J_3DoF->operator()(2, 1) = l1 * s1 + l2 * s12;
             J_3DoF->operator()(2, 2) = l2 * s12;
-
         }
 
 };
