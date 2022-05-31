@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
         rospy
         geometry_msgs
         std_msgs
-        wtr_serial
+        wtr_serial_msg
 )
 
 find_package(Eigen3 REQUIRED)
@@ -33,7 +33,7 @@ include_directories(
 
 catkin_package(
         CATKIN_DEPENDS
-        wtr_serial
+        wtr_serial_msg
 )
 
 

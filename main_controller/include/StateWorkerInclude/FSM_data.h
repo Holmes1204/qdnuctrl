@@ -1,7 +1,7 @@
 #ifndef _FSM_DATA_
 #define _FSM_DATA_
-#include "wtr_serial/em_ev.h"
-#include "wtr_serial/em_fb_raw.h"
+#include "wtr_serial_msg/em_ev.h"
+#include "wtr_serial_msg/em_fb_raw.h"
 #include "Controllers/LegCtrl_R.h"
 
 class FSM_data
@@ -9,8 +9,8 @@ class FSM_data
 private:
     /* data */
 public:
-    wtr_serial::em_ev mt_cmd;
-    wtr_serial::em_fb_raw mt_fdb;
+    wtr_serial_msg::em_ev mt_cmd;
+    wtr_serial_msg::em_fb_raw mt_fdb;
     Leg_Data leg[4];
     void UpdateData();
     void UpdateCmd();
