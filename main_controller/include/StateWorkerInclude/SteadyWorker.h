@@ -27,20 +27,18 @@ SteadyWorker::~SteadyWorker() {
 
 //不会一直卡在一个run中运行
 void SteadyWorker::run() {
-    if (iter_run%10==0)
+    if (iter_run%100==0)
         for (int i = 0; i < 4; i++)
-        {
-            std::cout<<i<<" "<<data_.leg[i].q.transpose()<<std::endl;
-        }
+        {}
     this-> iter_run++;
     return;
 }
 
 
 bool SteadyWorker::is_finished() {
-    if(0)
+    if(iter_run>400)
         {
-            //data_.On();
+            data_.On();
             for (int i = 0; i < 4; i++)
             {
                 std::cout<<i<<" "<<data_.leg[i].q.transpose()<<std::endl;
