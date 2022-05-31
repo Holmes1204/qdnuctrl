@@ -16,6 +16,8 @@
 namespace quad{
     /*! State Mode */
     enum STATE_TYPE{
+        STEADY,
+        STOP,
         INIT,
         STAND,
         WALK,

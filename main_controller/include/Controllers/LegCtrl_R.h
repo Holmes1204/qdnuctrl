@@ -28,18 +28,54 @@ struct Leg_Data{
 
 Leg_Data::Leg_Data(Vec3 &base):base_p(base)
 {
+    base_p =Vec3::Zero();
     p = Vec3::Zero();
     v = Vec3::Zero();
+    p_ref = Vec3::Zero();
+    v_ref = Vec3::Zero();
     J = Mat33::Zero();
     q = Vec3::Zero();
+    qd = Vec3::Zero();
+    q_ref = Vec3::Zero();
+    qd_ref = Vec3::Zero();
+    trq= Vec3::Zero();
+    force = Vec3::Zero();
+    kp=Vec3::Zero();
+    kd=Vec3::Zero();
+    //
+    kp.x() = 1;
+    kp.y() = 1;
+    kp.z() = 1;
+    //N/m/s
+    kd.x() = 0.01;
+    kd.y()= 0.01;
+    kd.z() = 0.01;
 }
 Leg_Data::Leg_Data()
 {
     base_p =Vec3::Zero();
     p = Vec3::Zero();
     v = Vec3::Zero();
+    p_ref = Vec3::Zero();
+    v_ref = Vec3::Zero();
     J = Mat33::Zero();
     q = Vec3::Zero();
+    qd = Vec3::Zero();
+    q_ref = Vec3::Zero();
+    qd_ref = Vec3::Zero();
+    trq= Vec3::Zero();
+    force = Vec3::Zero();
+    kp=Vec3::Zero();
+    kd=Vec3::Zero();
+    //N/m
+    kp.x() = 1;
+    kp.y() = 1;
+    kp.z() = 1;
+    //N/m/s
+    kd.x() = 0.01;
+    kd.y()= 0.01;
+    kd.z() = 0.01;
+
 }
 
 //计算jacobian

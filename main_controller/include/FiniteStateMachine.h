@@ -16,13 +16,11 @@ class FSM{
 private:
 
 public:
-    ros::NodeHandle nh_;
     std::vector<StateWorker*> Workers;
     int flow = 0;
     //New ADD
     FSM_data global_data;
-    FSM_topic_control* topic_contrl;
-
+    FSM_topic_control topic_contrl;
     FSM(ros::NodeHandle &nh);
     ~FSM();
     void loop();
@@ -30,11 +28,8 @@ public:
 
 };
 
-FSM::FSM(ros::NodeHandle &nh) 
+FSM::FSM(ros::NodeHandle &nh) :global_data(),topic_contrl(nh,global_data)
 {
-    this->nh_ = nh;
-    //this->global_data
-    this->topic_contrl = new FSM_topic_control(nh,this->global_data);
 }
 
 FSM::~FSM() {
@@ -57,7 +52,8 @@ void FSM::loop() {
         /*! Update Phases and Bezier Curve in different gait */
         this->Workers[this->flow]->run();
         //CONTROL
-        this->topic_contrl->em_cmd_send();
+        //send msg 应该封装入子State中不应该放在运行的FSM中
+        this->topic_contrl.em_cmd_send();
     }
 }
 
@@ -66,8 +62,18 @@ void FSM::build_ScheduleTable(int Schedule, ...) {
     va_start(arg_ptr, Schedule);
     while(Schedule != quad::END){
         switch (Schedule) {
+            case quad::STEADY:{
+                SteadyWorker* tmp_Worker = new SteadyWorker(this->global_data);
+                this->Workers.push_back((StateWorker *)tmp_Worker);
+                break;
+            }
             case quad::STAND:{
                 StandWorker* tmp_Worker = new StandWorker(this->global_data);
+                this->Workers.push_back((StateWorker *)tmp_Worker);
+                break;
+            }
+            case quad::STOP:{
+                StopWorker* tmp_Worker = new StopWorker(this->global_data);
                 this->Workers.push_back((StateWorker *)tmp_Worker);
                 break;
             }

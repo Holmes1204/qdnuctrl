@@ -1,6 +1,7 @@
 #ifndef _STATEWORKER_
 #define _STATEWORKER_
-
+#include "FSM_data.h"
+#include "FSM_tpcl.h"
 class StateWorker{
 public:
     virtual void run() = 0;
