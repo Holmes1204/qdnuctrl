@@ -2,47 +2,45 @@
 #define _STOPWORKER_
 
 #include "StateWorker.h"
-#include "geometry_msgs/Vector3.h"
-#include "std_msgs/Float64MultiArray.h"
-#include "unitree_legged_msgs/LowCmd.h"
-#include "unitree_legged_msgs/MotorCmd.h"
+#include "FSM_data.h"
 
-/**
- * @brief stop and down to the floor
- * @param none
- */
+
 class StopWorker: public StateWorker{
 private:
-    int flag_ = 0;
-    int count_;
-    double command_hip_ = 0;
-    double command_knee_ = 0;
-    double init_time_, cur_time_, end_time_;
-    double init_hip_ = 90.0, init_knee_ = -175.0;
-    Eigen::Matrix<double, 3, NUM_LEG> foot_pos_cur;
-    Eigen::Matrix<double, 3, NUM_LEG> foot_vel_cur;
-    Eigen::Matrix<float, 1, NUM_LEG> spline_time;
-    Eigen::Matrix<double, 3, NUM_LEG> foot_pos_target;
-    Eigen::Matrix<double, 3, NUM_LEG> foot_vel_target;
-    Eigen::Matrix<double, 3, NUM_LEG> foot_pos_error;
-    Eigen::Matrix<double, 3, NUM_LEG> foot_vel_error;
 
 public:
-    ros::NodeHandle nh_;
-    ros::Publisher pub_joint_cmd[12];
-    BezierUtils bezierUtils[NUM_LEG];
-
-    virtual void run(STATE_INTERIOR *cur_state);
+    uint32_t iter_run;
+    float iter_time_ms;
+    FSM_data &data_;
+    virtual void run();
     virtual bool is_finished();
 
-
-    StopWorker(ros::NodeHandle &nh);
+    StopWorker(FSM_data &data_);
     ~StopWorker();
-
 };
 
+StopWorker::StopWorker(FSM_data &data):data_(data){
+    this->iter_run=0;
+    this->iter_time_ms=0.0f;
+}
+
+StopWorker::~StopWorker() {
+
+}
+
+//不会一直卡在一个run中运行
+void StopWorker::run() {
+    data_.Off();
+    this-> iter_run++;
+    //std::cout<<"iter_run"<<iter_run<<std::endl;
+    return;
+}
 
 
-
+bool StopWorker::is_finished() {
+    if(iter_run>400)
+        {return true;}
+    else
+        {return false;}
+}
 #endif
-

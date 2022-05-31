@@ -24,22 +24,59 @@ struct Leg_Data{
     Vec3 get_foot_pos(int _leg);
     void compute_Jacobian(int _leg);
     Vec3 get_foot_vel();
+    Vec3 get_motor_angle(int _leg);
 };
 
 Leg_Data::Leg_Data(Vec3 &base):base_p(base)
 {
+    base_p =Vec3::Zero();
     p = Vec3::Zero();
     v = Vec3::Zero();
+    p_ref = Vec3::Zero();
+    v_ref = Vec3::Zero();
     J = Mat33::Zero();
     q = Vec3::Zero();
+    qd = Vec3::Zero();
+    q_ref = Vec3::Zero();
+    qd_ref = Vec3::Zero();
+    trq= Vec3::Zero();
+    force = Vec3::Zero();
+    kp=Vec3::Zero();
+    kd=Vec3::Zero();
+    //
+    kp.x() = 1;
+    kp.y() = 1;
+    kp.z() = 1;
+    //N/m/s
+    kd.x() = 0.01;
+    kd.y()= 0.01;
+    kd.z() = 0.01;
 }
 Leg_Data::Leg_Data()
 {
     base_p =Vec3::Zero();
     p = Vec3::Zero();
     v = Vec3::Zero();
+    p_ref = Vec3::Zero();
+    v_ref = Vec3::Zero();
     J = Mat33::Zero();
     q = Vec3::Zero();
+    qd = Vec3::Zero();
+    q_ref = Vec3::Zero();
+    qd_ref = Vec3::Zero();
+    trq= Vec3::Zero();
+    force = Vec3::Zero();
+    kp=Vec3::Zero();
+    kd=Vec3::Zero();
+    //N/m
+    kp.x() = 9000;
+    kp.y() = 1;
+    kp.z() = 1;
+    //N/m/s
+    kd.x() = 20;
+    kd.y()= 0;
+    kd.z() = 0;
+
 }
 
 //计算jacobian
@@ -95,10 +132,42 @@ void Leg_Data::compute_Jacobian(int _leg) {
         }
         return this->p;
     }
+//inverse kinematic
+    Vec3 Leg_Data::get_motor_angle(int _leg){
+        double l = (this->p_ref-this->base_p).norm();
+        double theta3 = atan2(this->p_ref.x()-this->base_p.x(),this->p_ref.z()-this->base_p.z());
+        if (theta3>0)
+        {
+            theta3-=2*M_PI;
+        }
+        double theta4 = acos(l/this->l1/2.0);
+        //std::cout<<"t3 "<<theta3<<"t4 "<<theta4<<std::endl;
+        switch (_leg)
+        {
+        case LF:
+        case LB:
+            this->q_ref.x() = 0;
+            this->q_ref.y() = -(theta3+theta4)-M_PI;
+            this->q_ref.z() = 2*theta4;
+            break;
+        case RF:
+        case RB:
+            this->q_ref.x() = 0;
+            this->q_ref.y() = theta3+theta4+M_PI;
+            this->q_ref.z() = -2*theta4;
+        default:
+            break;
+        }
+        return this->q_ref;
+    }
+
     Vec3 Leg_Data::get_foot_vel(){
         this->v = this->J*this->qd;
         return this->v;
     }
+
+
+
 //calcualte desire force
     Vec3 Leg_Data::get_force(){
         this->force.x() = this->kp.x()*(this->p_ref.x()-this->p.x())+ this->kd.x()*(this->v_ref.x()-this->v.x());

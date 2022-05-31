@@ -8,10 +8,8 @@
 #include "common_defination.h"
 #include "common_parameter.h"
 #include "StandWorker.h"
-
-
-
-#include "geometry_msgs/WrenchStamped.h"
+#include "SteadyWorker.h"
+#include "StopWorker.h"
 
 
 #endif

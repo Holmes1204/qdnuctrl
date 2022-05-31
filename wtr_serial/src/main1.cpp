@@ -1,8 +1,8 @@
 #include <string>
 #include <serial/serial.h>
 #include <ros/ros.h>
-#include <wtr_serial/em_fb_raw.h>
-#include <wtr_serial/em_ev.h>
+#include <wtr_serial_msg/em_fb_raw.h>
+#include <wtr_serial_msg/em_ev.h>
 #include <iostream>
 #include <sys/time.h>
 #include <cstring>
@@ -53,7 +53,7 @@ private:
     ros::Subscriber cmd_sub;
     ros::Publisher em_fb_pub;
     //数据
-    wtr_serial::em_fb_raw em_fb_data;
+    wtr_serial_msg::em_fb_raw em_fb_data;
     uart_data_t s1_uart_data, s2_uart_data;
     uart_command_t s1_uart_cmd, s2_uart_cmd;
     //共用一个地址还是分开
@@ -66,9 +66,9 @@ private:
 public:
     ros::NodeHandle nh;
     ros::Rate loop_rate;
-    void callback(const wtr_serial::em_ev::ConstPtr &message);
+    void callback(const wtr_serial_msg::em_ev::ConstPtr &message);
     void redecode();
-    void decode(const wtr_serial::em_ev::ConstPtr &msg);
+    void decode(const wtr_serial_msg::em_ev::ConstPtr &msg);
     void send();
     void recopy_(float *l_mid, float *l_down, float *f_mid, float *f_down, boost::array<float, 8UL> &ref);
     template <typename type>
@@ -112,7 +112,7 @@ void print_data(const uart_data_t *cmd)
     printf("-----------\n");
 }
 
-void serial_node::decode(const wtr_serial::em_ev::ConstPtr &msg)
+void serial_node::decode(const wtr_serial_msg::em_ev::ConstPtr &msg)
 {
     //将msg解码到两个数据中
     copy_<float>(s1_uart_cmd.pos_des_mid, s1_uart_cmd.pos_des_down, s2_uart_cmd.pos_des_mid, s2_uart_cmd.pos_des_down, msg->em_ev_pos);
@@ -221,7 +221,7 @@ void serial_node::send()
     //print_data(&s1_uart_data);
 }
 
-void serial_node::callback(const wtr_serial::em_ev::ConstPtr &message)
+void serial_node::callback(const wtr_serial_msg::em_ev::ConstPtr &message)
 {
     decode(message);
     send();
@@ -235,7 +235,7 @@ serial_node::serial_node(uint32_t baud, double rate) : loop_rate(rate),
                                                        my_serial2(std::string("/dev/ttyACM1"), baud, serial::Timeout::simpleTimeout(10))
 {
     cmd_sub = nh.subscribe("/em_ev", 10, &serial_node::callback, this);
-    em_fb_pub = nh.advertise<wtr_serial::em_fb_raw>("/em_fb_raw", 10);
+    em_fb_pub = nh.advertise<wtr_serial_msg::em_fb_raw>("/em_fb_raw", 10);
     //优化1
     rcv1 = (uint8_t*)&s1_uart_data;
     rcv2 = (uint8_t*)&s2_uart_data;
