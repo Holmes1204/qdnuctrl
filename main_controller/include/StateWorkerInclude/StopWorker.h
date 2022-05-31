@@ -30,13 +30,7 @@ StopWorker::~StopWorker() {
 
 //不会一直卡在一个run中运行
 void StopWorker::run() {
-    for (int i = 0; i < 4; i++)
-    {
-        data_.leg[i].p_ref.x()=data_.leg[i].base_p.x();
-        data_.leg[i].p_ref.y()=data_.leg[i].base_p.y();
-        data_.leg[i].p_ref.z()=data_.leg[i].base_p.z();
-    }
-    //leg_angel 增减
+    data_.Off();
     this-> iter_run++;
     //std::cout<<"iter_run"<<iter_run<<std::endl;
     return;
@@ -44,7 +38,7 @@ void StopWorker::run() {
 
 
 bool StopWorker::is_finished() {
-    if(0)
+    if(iter_run>400)
         {return true;}
     else
         {return false;}

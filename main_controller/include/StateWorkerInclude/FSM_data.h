@@ -12,15 +12,16 @@ public:
     wtr_serial::em_ev mt_cmd;
     wtr_serial::em_fb_raw mt_fdb;
     Leg_Data leg[4];
+    uint32_t motor_state=0;
     void UpdateData();
     void UpdateCmd();
     FSM_data();
     ~FSM_data();
     void On(){
-        mt_cmd.em_state[0]=1;
+        this->motor_state=1;
     }
     void Off(){
-        mt_cmd.em_state[0]=0;
+        this->motor_state=0;
     }
 };
 
@@ -58,35 +59,25 @@ void FSM_data:: UpdateCmd(){
     //std::cout<<"--------------------\n";
     for (int i = 0; i < 4; i++)
     {
-        leg[i].compute_Jacobian(i);
-        Vec3 torque_ = leg[i].get_torque();
-        for (int i = 0; i < 3; i++)
-        {
-            if (std::fabs(torque_(i))>3.0f)
-            {
-                if (torque_(i)>0.0f)
-                {
-                    torque_(i)=3.0f;
-                }
-                else{
-                    torque_(i)=-3.0f;
-                }
-                
-            }
-        }
-        mt_cmd.em_ev_kp[2*i]=0;
-        mt_cmd.em_ev_kd[2*i]=0;
-        mt_cmd.em_ev_pos[2*i]=0;
+        leg[i].get_motor_angle(i);
+        //std::cout<<i<<" "<<leg[i].p_ref.transpose()<<std::endl;
+        //std::cout<<i<<" "<<leg[i].q_ref.transpose()<<std::endl;
+        mt_cmd.em_ev_kp[2*i]=40;
+        mt_cmd.em_ev_kd[2*i]=1;
+        mt_cmd.em_ev_pos[2*i]=leg[i].q_ref(1);
         mt_cmd.em_ev_vel[2*i]=0;
-        mt_cmd.em_ev_trq[2*i]=torque_(1);
-        mt_cmd.em_ev_kp[2*i+1]=0;
-        mt_cmd.em_ev_kd[2*i+1]=0;
-        mt_cmd.em_ev_pos[2*i+1]=0;
+        mt_cmd.em_ev_trq[2*i]=0;
+        mt_cmd.em_ev_kp[2*i+1]=40;
+        mt_cmd.em_ev_kd[2*i+1]=1;
+        mt_cmd.em_ev_pos[2*i+1]=leg[i].q_ref(2);
         mt_cmd.em_ev_vel[2*i+1]=0;
-        mt_cmd.em_ev_trq[2*i+1]=torque_(2);
+        mt_cmd.em_ev_trq[2*i+1]=0;
+        mt_cmd.em_state[0]=this->motor_state;
+        mt_cmd.em_state[1]=0;
         //std::cout<<i<<" "<<torque_.transpose()<<std::endl;
         //std::cout<<leg[i].J<<std::endl;
     }
 }
+
 
 #endif //_FSM_DATA_
